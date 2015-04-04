@@ -1,0 +1,88 @@
+#!/usr/bin/python
+
+import sys, os, traceback, optparse
+import operator
+import time
+import re
+import random
+
+# Color map
+colors = {
+    'blue'  : '[34',
+    'green' : '[32',
+    'cyan'  : '[36',
+    'red'   : '[31',
+    'purple': '[35',
+    'brown' : '[33',
+    'yellow': '[1;33',
+    'white' : '[1;37'
+}
+
+# Control characters (end color)
+control = {
+    'end'  : '['
+}
+
+# Weights map
+weights = {
+    'black' : 1.00,
+    'blue'  : 1.00,
+    'green' : 1.00,
+    'cyan'  : 1.00,
+    'red'   : 1.00,
+    'purple': 1.00,
+    'brown' : 1.00,
+    'gray'  : 1.00,
+    'yellow': 1.00,
+    'white' : 1.00
+}
+
+def main ():
+    global options, args
+
+    # Get the filename to colorize
+    filename = sys.argv[1]
+    print 'Colorizing \"' + filename + '\"'
+
+    # Allow for customization (list of colors to use, not use)
+    # Allow for weighting of colors
+    #
+    # Pick random color from map with weighting for each character
+    # End with 'stop'
+    outfile = open(filename + '.color', 'w+')
+
+    with open(filename) as f:
+        for line in f:
+            for c in line:
+                if c.isalnum():
+                    color = random.choice(colors.keys())
+                    cc = '\033' + colors[color] + 'm' + c
+                    outfile.write(cc)
+                else:
+                    outfile.write(c)
+
+    outfile.write('\033' + control['end'] + 'm')
+
+if __name__ == '__main__':
+    try:
+        start_time = time.time()
+        parser = optparse.OptionParser(formatter=optparse.TitledHelpFormatter(), usage=globals()['__doc__'], version='$Id$')
+        parser.add_option ('-v', '--verbose', action='store_true', default=False, help='verbose output')
+        (options, args) = parser.parse_args()
+        # if len(args) < 1:
+        #     parser.error ('missing argument')
+        if options.verbose: print time.asctime()
+        main()
+        if options.verbose: print time.asctime()
+        if options.verbose: print 'TOTAL TIME IN MINUTES:',
+        if options.verbose: print (time.time() - start_time) / 60.0
+        sys.exit(0)
+    except KeyboardInterrupt, e: # Ctrl-C
+        raise e
+    except SystemExit, e: # sys.exit()
+        raise e
+    except Exception, e:
+        print 'ERROR, UNEXPECTED EXCEPTION'
+        print str(e)
+        traceback.print_exc()
+        os._exit(1)
