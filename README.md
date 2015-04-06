@@ -17,17 +17,14 @@ Colorize accepts several options:
 ```bash
 ./colorize -r -f <file>
 ```
-
 2. Use a specific color
 ```bash
 ./colorize -c yellow -f <file>
 ```
-
 3. Random colorization from a list of colors:
 ```bash
 ./colorize --list=yellow,blue,green,white -f <file>
 ```
-
 4. Random colorization, except for a list of colors:
 ```bash
 ./colorize --except=black,gray,red -f <file>
