@@ -37,27 +37,60 @@ weights = {
     'white' : 1.00
 }
 
+def ChooseColor(options):
+    if options.random:
+        color = random.choice(colors.keys())
+
+    elif options.color:
+        color =  options.color
+
+    elif options.color_list:
+        color_list = options.color_list.split(',')
+        color = random.choice(color_list)
+
+    elif options.except_list:
+        except_list = options.except_list.split(',')
+        color = random.choice(list(set(colors.keys()) - set(except_list)))
+
+    print 'Color chosen: ' + color
+
+    return color
+
 def main ():
     global options, args
 
+    if options.verbose:
+        print 'Options:'
+        if options.random:
+            print 'Random'
+        elif options.color:
+            print 'Color: ' + options.color
+        elif options.color_list:
+            print 'Color List: ' + options.color_list
+        elif options.except_list:
+            print 'Except List: ' + options.except_list
+
+        print '\n'
+
     # Get the filename to colorize
-    filename = sys.argv[1]
-    print 'Colorizing \"' + filename + '\"'
+    print 'Colorizing \"' + options.filename + '\"'
 
     # Allow for customization (list of colors to use, not use)
     # Allow for weighting of colors
     #
     # Pick random color from map with weighting for each character
     # End with 'stop'
-    outfile = open(filename + '.color', 'w+')
+    outfile = open(options.filename + '.color', 'w+')
 
-    with open(filename) as f:
+    with open(options.filename) as f:
         for line in f:
             for c in line:
                 if c.isalnum():
-                    color = random.choice(colors.keys())
-                    cc = '\033' + colors[color] + 'm' + c
-                    outfile.write(cc)
+                    color = ChooseColor(options)
+
+                    if color in colors.keys():
+                        cc = '\033' + colors[color] + 'm' + c
+                        outfile.write(cc)
                 else:
                     outfile.write(c)
 
@@ -67,10 +100,24 @@ if __name__ == '__main__':
     try:
         start_time = time.time()
         parser = optparse.OptionParser(formatter=optparse.TitledHelpFormatter(), usage=globals()['__doc__'], version='$Id$')
+
         parser.add_option ('-v', '--verbose', action='store_true', default=False, help='verbose output')
+
+        parser.add_option ('-f', '--file', action='store', type='string', dest='filename', help='input file (output file will have same name with .color extension)')
+
+        parser.add_option ('-r', '--random', action='store_true', default=False, help='random colors')
+
+        parser.add_option ('-c', '--color', action='store', type='string', dest='color', help='specify a single color (red, green, blue, cyan, purple, brown, yellow, white)')
+
+        parser.add_option ('-l', '--list', action='store', type='string', dest='color_list', help='specfiy a list of colors to randomly pick from')
+
+        parser.add_option ('-e', '--except', action='store', type='string', dest='except_list', help='specify a list of colors to NOT pick')
+
         (options, args) = parser.parse_args()
-        # if len(args) < 1:
-        #     parser.error ('missing argument')
+
+        if not options.filename:
+            parser.error ('missing argument: -f <filename>')
+
         if options.verbose: print time.asctime()
         main()
         if options.verbose: print time.asctime()
