@@ -52,7 +52,8 @@ def ChooseColor(options):
         except_list = options.except_list.split(',')
         color = random.choice(list(set(colors.keys()) - set(except_list)))
 
-    print 'Color chosen: ' + color
+    if options.verbose:
+        print 'Color chosen: ' + color
 
     return color
 
@@ -85,6 +86,7 @@ def main ():
     with open(options.filename) as f:
         for line in f:
             for c in line:
+                #if c.isalnum() or ord(c) > 127: <--- doesn't work... outputs '???'s
                 if c.isalnum():
                     color = ChooseColor(options)
 
