@@ -15,20 +15,20 @@ Colorize accepts several options:
 
 1. Random colorization:
 ```bash
-./colorize -r <file>
+./colorize -r -f <file>
 ```
 
 2. Use a specific color
 ```bash
-./colorize -c yellow <file>
+./colorize -c yellow -f <file>
 ```
 
 3. Random colorization from a list of colors:
 ```bash
-./colorize --list=yellow,blue,green,white <file>
+./colorize --list=yellow,blue,green,white -f <file>
 ```
 
 4. Random colorization, except for a list of colors:
 ```bash
-./colorize --except=black,gray,red <file>
+./colorize --except=black,gray,red -f <file>
 ```
